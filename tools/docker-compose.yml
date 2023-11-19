@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+
+  registry:
+    image: registry:2
+    ports:
+      - 5000:5000
+    environment:
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+    volumes:
+      - registry_data:/data
+    networks:
+      - jenkins
+    restart: always
+
+
+  sonarqube:
+    image: sonarqube:lts
+    container_name: sonarqube
+    ports:
+      - 9000:9000
+      - 9092:9092
+    networks:
+      - jenkins
+    environment:
+      - SONAR_FORCEAUTHENTICATION=false
+    restart: always
+
+
+  jenkins:
+    build: .
+    image: jenkins:2.401.2-jdk17
+    container_name: jenkins
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - jenkins-docker-certs:/certs/client:ro
+      - ./Dockerfile:/Dockerfile
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    networks:
+      - jenkins
+    restart: always
+
+
+volumes:
+  jenkins-data:
+  registry_data:
+  jenkins-docker-certs:
+
+networks:
+  jenkins:

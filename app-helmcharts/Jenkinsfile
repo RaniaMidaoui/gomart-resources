@@ -1,0 +1,35 @@
+pipeline {
+
+    environment{
+      DEPLOY_NAME="e-commerce"
+      K8S_CONFIG_NAME='kubeconfig'
+      CHART_PATH="./app-helmcharts/goMart-helmcharts"
+    }
+
+    tools {
+      go 'go_120'
+    }
+
+    agent any
+
+    stages{
+        stage('Redeploy Helm Chart') {
+            steps {
+               script{
+                    docker.image('alpine/helm').inside("--entrypoint=''  --net minikube"){
+                        withKubeConfig([credentialsId: "$K8S_CONFIG_NAME"]) {
+                            sh  "helm upgrade \${DEPLOY_NAME} -f \${CHART_PATH}/e-commerce-app/values.yaml \${CHART_PATH}/e-commerce-app --install"
+                        }
+                    }
+                }
+            }
+        }   
+    }
+
+
+    post { 
+        always { 
+            cleanWs()
+        }
+    }
+}

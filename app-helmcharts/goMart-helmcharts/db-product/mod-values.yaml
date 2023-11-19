@@ -1,0 +1,15 @@
+global:
+  storageClass: standard
+  postgresql:
+    auth:
+      postgresPassword: fgdgd3
+      username: postgres
+      password: fgdgd3
+      database: product_svc
+
+primary:
+  persistence:
+    enabled: true
+    existingClaim: db-product-persistent-volume-claim
+    mountPath: /tmp/hostpath-provisioner/db-persistent-volume-claim-product
+    storageClass: standard

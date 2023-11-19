@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-microservice
+  labels:
+  {{- include "helmcharts.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.authMicroservice.type }}
+  selector:
+    app: auth-microservice
+  {{- include "helmcharts.selectorLabels" . | nindent 4 }}
+  ports:
+	{{- .Values.authMicroservice.ports | toYaml | nindent 2 -}}

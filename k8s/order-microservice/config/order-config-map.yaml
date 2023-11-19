@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  POSTGRES_USER: "postgres"
+  DB_PORT: "5432"
+  POSTGRES_DB: "order_svc"
+  DB_HOST: "db-order"
+metadata:
+  name: order-config
+  namespace: default

@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: order-pv
+  labels:
+  {{- include "helmcharts.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 500M
+  hostPath:
+    path: /tmp/hostpath-provisioner/db-order-persistent-volume-claim-order
+    type: DirectoryOrCreate
+  storageClassName: {{ .Values.pvc.dbPersistentVolumeClaim.storageClass | quote }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-order-persistent-volume-claim
+  labels:
+  {{- include "helmcharts.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pvc.dbPersistentVolumeClaim.storageRequest | quote
+        }}
+  storageClassName: {{ .Values.pvc.dbPersistentVolumeClaim.storageClass | quote
+    }}

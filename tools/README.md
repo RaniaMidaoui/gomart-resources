@@ -1,0 +1,1 @@
+This folder contains a `docker-compose.yaml` file to install and run Jenkins locally from the `Dockerfile` in the directory, SonarQube and a local docker registry.

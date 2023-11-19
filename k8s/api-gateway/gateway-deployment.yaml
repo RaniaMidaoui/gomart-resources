@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  labels:
+    app: api-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: raniamidaoui/goMart-gateway:latest
+        ports:
+        - containerPort: 3000
+        env:
+
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                name: gateway-config
+                key: PORT
+
+          - name: AUTH_SERVICE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: gateway-config
+                key: AUTH_SERVICE_URL
+
+          - name: PRODUCT_SERVICE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: gateway-config
+                key: PRODUCT_SERVICE_URL
+
+          - name: ORDER_SERVICE_URL
+            valueFrom:
+              configMapKeyRef:
+                name: gateway-config
+                key: ORDER_SERVICE_URL

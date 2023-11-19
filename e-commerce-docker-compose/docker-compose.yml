@@ -1,0 +1,136 @@
+version: '3.8'
+
+services:
+
+  db_auth:
+    image: postgres:15
+    ports:
+      - 5434:5432
+    volumes:
+      - auth_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${AUTH_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${AUTH_POSTGRES_DB}
+    networks:
+      - app
+    restart: always
+
+  db_product:
+    image: postgres:15
+    ports:
+      - 5435:5432
+    volumes:
+      - product_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${PRODUCT_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${PRODUCT_POSTGRES_DB}
+    networks:
+      - app
+    restart: always
+    
+  db_order:
+    image: postgres:15
+    ports:
+      - 5436:5432
+    volumes:
+      - order_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${ORDER_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${ORDER_POSTGRES_DB}
+    networks:
+      - app
+    restart: always
+
+
+  goMart-gateway:
+    image: goMart-gateway
+    build:
+      context: ../../goMart-gateway
+      dockerfile: Dockerfile
+    environment:
+      PORT: ":3000"
+      AUTH_SERVICE_URL: goMart-authentication-service:50051
+      PRODUCT_SERVICE_URL: goMart-product-service:50052
+      ORDER_SERVICE_URL: goMart-order-service:50053
+    ports:
+      - 3000:3000
+    networks:
+      - app
+    restart: always
+
+
+  goMart-authentication-service:
+    image: goMart-authentication-service
+    build:
+      context: ../../goMart-authentication-service
+      dockerfile: Dockerfile
+    ports:
+      - "50051:50051"
+    environment:
+      DB_HOST: db_auth
+      DB_PORT: ${DB_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${AUTH_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${AUTH_POSTGRES_DB}
+      DB_URL: "postgres://${POSTGRES_USER}:${AUTH_POSTGRES_PASSWORD}@db_auth:${DB_PORT}/${AUTH_POSTGRES_DB}"
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    depends_on:
+      - db_auth
+    networks:
+      - app
+    restart: always
+
+
+  goMart-order-service:
+    image: goMart-order-service
+    build:
+      context: ../../goMart-order-service
+      dockerfile: Dockerfile
+    environment:
+      PRODUCT_SERVICE_URL: goMart-product-service:50052
+      DB_HOST: db_order
+      DB_PORT: ${DB_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${ORDER_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${ORDER_POSTGRES_DB}
+      DB_URL: "postgres://${POSTGRES_USER}:${ORDER_POSTGRES_PASSWORD}@db_order:${DB_PORT}/${ORDER_POSTGRES_DB}"
+    ports:
+      - "50053:50053"
+    depends_on:
+      - db_order
+    networks:
+      - app
+    restart: always
+
+
+  goMart-product-service:
+    image: goMart-product-service
+    build:
+      context: ../../goMart-product-service
+      dockerfile: Dockerfile
+    ports:
+      - "50052:50052"
+    environment:
+      DB_HOST: db_product
+      DB_PORT: ${DB_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${PRODUCT_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${PRODUCT_POSTGRES_DB}
+      DB_URL: "postgres://${POSTGRES_USER}:${PRODUCT_POSTGRES_PASSWORD}@db_product:${DB_PORT}/${PRODUCT_POSTGRES_DB}"
+    depends_on:
+      - db_product
+    networks:
+      - app
+    restart: always
+
+volumes:
+  auth_data:
+  product_data:
+  order_data:
+
+networks:
+  app:
+    driver: bridge

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/api-gateway/gateway-config-map.yaml") . | sha256sum }}
+    reloader.stakater.com/auto: "true"
+  labels:
+    app: api-gateway
+  {{- include "helmcharts.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.apiGateway.replicas }}
+  selector:
+    matchLabels:
+      app: api-gateway
+    {{- include "helmcharts.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+      {{- include "helmcharts.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              key: PORT
+              name: gateway-config
+        - name: AUTH_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              key: AUTH_SERVICE_URL
+              name: gateway-config
+        - name: PRODUCT_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              key: PRODUCT_SERVICE_URL
+              name: gateway-config
+        - name: ORDER_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              key: ORDER_SERVICE_URL
+              name: gateway-config
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.apiGateway.apiGateway.image }}
+        imagePullPolicy: {{ .Values.apiGateway.apiGateway.imagePullPolicy }}
+        name: api-gateway
+        ports:
+        - containerPort:  3000
+        resources: {}

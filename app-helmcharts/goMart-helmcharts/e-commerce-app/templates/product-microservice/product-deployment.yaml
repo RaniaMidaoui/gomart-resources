@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-microservice
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/product-microservice/product-config-map.yaml") . | sha256sum }}
+    reloader.stakater.com/auto: "true"
+  labels:
+    app: product-microservice
+  {{- include "helmcharts.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.productMicroservice.replicas }}
+  selector:
+    matchLabels:
+      app: product-microservice
+    {{- include "helmcharts.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: product-microservice
+      {{- include "helmcharts.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: DB_HOST
+          value: {{ quote .Values.productMicroservice.productMicroservice.env.dbHost }}
+        - name: PRODUCT_SERVICE_URL
+          value: {{ quote .Values.productMicroservice.productMicroservice.env.productServiceUrl
+            }}
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: DB_PORT
+              name: product-config
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_USER
+              name: product-config
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: POSTGRES_PASSWORD
+              name: product-secret
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_DB
+              name: product-config
+        - name: DB_URL
+          valueFrom:
+            secretKeyRef:
+              key: DB_URL
+              name: product-secret
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.productMicroservice.productMicroservice.image }}
+        imagePullPolicy: {{ .Values.productMicroservice.productMicroservice.imagePullPolicy }}
+        name: product-microservice
+        ports:
+        - containerPort: 50052
+        resources: {}

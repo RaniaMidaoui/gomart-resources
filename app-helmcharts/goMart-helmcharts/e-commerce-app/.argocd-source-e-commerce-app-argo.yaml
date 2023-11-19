@@ -1,0 +1,14 @@
+helm:
+  parameters:
+  - name: authMicroservice.authMicroservice.image
+    value: raniamidaoui/goMart-authentication-service@sha256:59b8422717326cab536e74c4b43f3bf0358ffbaf019e6e36673096c307399149
+    forcestring: true
+  - name: orderMicroservice.orderMicroservice.image
+    value: raniamidaoui/goMart-order-service@sha256:a6c58ff78c00bf34a335e124732efdee8c1c9db090cd3ce0a232a1e09b86fd97
+    forcestring: true
+  - name: productMicroservice.productMicroservice.image
+    value: raniamidaoui/goMart-product-service@sha256:2b438da4816a9a3098c59a618fc12a215275dc8709ecd8c50788d595b26326b8
+    forcestring: true
+  - name: apiGateway.apiGateway.image
+    value: raniamidaoui/goMart-gateway@sha256:55aebf144999dd9fb82af5fef44474722a883c4ead0fe32907d9b03cb98bbd16
+    forcestring: true

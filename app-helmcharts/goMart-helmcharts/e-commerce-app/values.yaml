@@ -1,0 +1,117 @@
+apiGateway:
+  apiGateway:
+    image: raniamidaoui/goMart-gateway:latest
+    imagePullPolicy: Always
+  ports:
+  - port: 3001
+    targetPort: 3001
+  replicas: 3
+  type: ClusterIP
+
+authMicroservice:
+  authMicroservice:
+    env:
+      dbHost: db-auth-postgresql
+    image: raniamidaoui/goMart-authentication-service:latest
+    imagePullPolicy: Always
+  ports:
+  - port: 50051
+    targetPort: 50051
+  replicas: 1
+  type: ClusterIP
+
+config:
+  dbHost: db-auth-postgresql
+  dbPort: "5432"
+  postgresDb: auth_svc
+  postgresUser: postgres
+
+dbAuth:
+  dbAuth:
+    image:
+      repository: postgresql
+      tag: "13"
+    imagePullPolicy: Always
+  ports:
+  - port: 5432
+    targetPort: 5432
+  replicas: 1
+  type: Always
+
+dbOrder:
+  dbOrder:
+    image:
+      repository: postgres
+      tag: "13"
+    imagePullPolicy: Always
+  ports:
+  - port: 5432
+    targetPort: 5432
+  replicas: 1
+  type: ClusterIP
+
+dbProduct:
+  dbProduct:
+    image:
+      repository: postgres
+      tag: "13"
+    imagePullPolicy: Always
+  ports:
+  - port: 5432
+    targetPort: 5432
+  replicas: 1
+  type: ClusterIP
+
+gatewayConfig:
+  authServiceUrl: auth-microservice:50051
+  orderServiceUrl: order-microservice:50053
+  port: :3001
+  productServiceUrl: product-microservice:50052
+kubernetesClusterDomain: cluster.local
+
+orderConfig:
+  dbHost: db-order-postgresql
+  dbPort: "5432"
+  postgresDb: order_svc
+  postgresUser: postgres
+
+orderMicroservice:
+  orderMicroservice:
+    env:
+      dbHost: db-order-postgresql
+      productServiceUrl: product-microservice:50052
+    image: raniamidaoui/goMart-order-service:latest
+    imagePullPolicy: Always
+  ports:
+  - port: 50053
+    targetPort: 50053
+  replicas: 1
+  type: ClusterIP
+
+
+productConfig:
+  dbHost: db-product-postgresql
+  dbPort: "5432"
+  postgresDb: product_svc
+  postgresUser: postgres
+
+productMicroservice:
+  ports:
+  - port: 50052
+    targetPort: 50052
+  productMicroservice:
+    env:
+      dbHost: db-product-postgresql
+      productServiceUrl: product-microservice
+    image: raniamidaoui/goMart-product-service:latest
+    imagePullPolicy: Always
+  replicas: 1
+  type: ClusterIP
+
+pvc:
+  dbPersistentVolumeClaim:
+    storageClass: standard
+    storageRequest: 500M
+
+ingress:
+  enabled: true

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-config
+  labels:
+    reloader: enabled
+  {{- include "helmcharts.labels" . | nindent 4 }}
+
+data:
+  AUTH_SERVICE_URL: {{ .Values.gatewayConfig.authServiceUrl | quote }}
+  ORDER_SERVICE_URL: {{ .Values.gatewayConfig.orderServiceUrl | quote }}
+  PORT: {{ .Values.gatewayConfig.port | quote }}
+  PRODUCT_SERVICE_URL: {{ .Values.gatewayConfig.productServiceUrl | quote }}

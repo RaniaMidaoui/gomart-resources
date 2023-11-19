@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  PORT: ":3001"
+  AUTH_SERVICE_URL: auth-microservice:50051
+  PRODUCT_SERVICE_URL: product-microservice:50052
+  ORDER_SERVICE_URL: order-microservice:50053
+metadata:
+  name: gateway-config
+  namespace: default

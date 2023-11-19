@@ -1,0 +1,15 @@
+global:
+  storageClass: standard
+  postgresql:
+    auth:
+      postgresPassword: eadua7r
+      username: postgres
+      password: eadua7r
+      database: order_svc
+
+primary:
+  persistence:
+    enabled: true
+    existingClaim: db-order-persistent-volume-claim
+    mountPath: /tmp/hostpath-provisioner/db-persistent-volume-claim-order
+    storageClass: standard

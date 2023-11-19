@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-microservice
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/auth-microservice/auth-config-map.yaml") . | sha256sum }}
+    reloader.stakater.com/auto: "true"
+  labels:
+    app: auth-microservice
+  {{- include "helmcharts.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.authMicroservice.replicas }}
+  selector:
+    matchLabels:
+      app: auth-microservice
+    {{- include "helmcharts.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: auth-microservice
+      {{- include "helmcharts.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: DB_HOST
+          value: {{ quote .Values.authMicroservice.authMicroservice.env.dbHost }}
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: DB_PORT
+              name: config
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_USER
+              name: config
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: POSTGRES_PASSWORD
+              name: auth-secret
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_DB
+              name: config
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key: JWT_SECRET_KEY
+              name: auth-secret
+        - name: DB_URL
+          valueFrom:
+            secretKeyRef:
+              key: DB_URL
+              name: auth-secret
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.authMicroservice.authMicroservice.image }}
+        imagePullPolicy: {{ .Values.authMicroservice.authMicroservice.imagePullPolicy }}
+        name: auth-microservice
+        ports:
+        - containerPort: 50051
+        resources: {}

@@ -1,0 +1,15 @@
+global:
+  storageClass: standard
+  postgresql:
+    auth:
+      postgresPassword: hgfh535t
+      username: postgres
+      password: hgfh535t
+      database: auth_svc
+
+primary:
+  persistence:
+    enabled: true
+    existingClaim: db-persistent-volume-claim
+    mountPath: /tmp/hostpath-provisioner/db-persistent-volume-claim-auth
+    storageClass: standard

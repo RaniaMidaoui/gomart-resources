@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-microservice
+  labels:
+  {{- include "helmcharts.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.productMicroservice.type }}
+  selector:
+    app: product-microservice
+  {{- include "helmcharts.selectorLabels" . | nindent 4 }}
+  ports:
+	{{- .Values.productMicroservice.ports | toYaml | nindent 2 -}}

@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-microservice
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/order-microservice/order-config-map.yaml") . | sha256sum }}
+    reloader.stakater.com/auto: "true"
+  labels:
+    app: order-microservice
+  {{- include "helmcharts.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.orderMicroservice.replicas }}
+  selector:
+    matchLabels:
+      app: order-microservice
+    {{- include "helmcharts.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: order-microservice
+      {{- include "helmcharts.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: DB_HOST
+          value: {{ quote .Values.orderMicroservice.orderMicroservice.env.dbHost }}
+        - name: PRODUCT_SERVICE_URL
+          value: {{ quote .Values.orderMicroservice.orderMicroservice.env.productServiceUrl
+            }}
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: DB_PORT
+              name: order-config
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_USER
+              name: order-config
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: POSTGRES_PASSWORD
+              name: order-secret
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_DB
+              name: order-config
+        - name: DB_URL
+          valueFrom:
+            secretKeyRef:
+              key: DB_URL
+              name: order-secret
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.orderMicroservice.orderMicroservice.image }}
+        name: order-microservice
+        imagePullPolicy: {{ .Values.orderMicroservice.orderMicroservice.imagePullPolicy }}
+        ports:
+        - containerPort: 50053
+        resources: {}

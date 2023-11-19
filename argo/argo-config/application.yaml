@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: goMart
+  namespace: myargo
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: "auth=raniamidaoui/goMart-authentication-service:latest, order=raniamidaoui/goMart-order-service:latest, product=raniamidaoui/goMart-product-service:latest, gateway=raniamidaoui/goMart-gateway:latest"
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/git-branch: master
+
+    argocd-image-updater.argoproj.io/auth.update-strategy: digest
+    argocd-image-updater.argoproj.io/auth.force-update: "true"
+    argocd-image-updater.argoproj.io/auth.helm.image-spec: authMicroservice.authMicroservice.image
+
+    argocd-image-updater.argoproj.io/order.update-strategy: digest
+    argocd-image-updater.argoproj.io/order.force-update: "true"
+    argocd-image-updater.argoproj.io/order.helm.image-spec: orderMicroservice.orderMicroservice.image
+
+    argocd-image-updater.argoproj.io/product.update-strategy: digest
+    argocd-image-updater.argoproj.io/product.force-update: "true"
+    argocd-image-updater.argoproj.io/product.helm.image-spec: productMicroservice.productMicroservice.image
+
+    argocd-image-updater.argoproj.io/gateway.update-strategy: digest
+    argocd-image-updater.argoproj.io/gateway.force-update: "true"
+    argocd-image-updater.argoproj.io/gateway.helm.image-spec: apiGateway.apiGateway.image
+
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/RaniaMidaoui/goMart-resources'
+    path: app-helmcharts/goMart-helmcharts/e-commerce-app
+    targetRevision: master
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    - Replace=true
+    - ApplyOutOfSyncOnly=true
+
+    automated:
+      selfHeal: true
+      prune: true
+      allowEmpty: true

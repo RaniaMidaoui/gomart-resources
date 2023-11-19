@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-microservice
+  labels:
+    app: auth-microservice
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auth-microservice
+  template:
+    metadata:
+      labels:
+        app: auth-microservice
+    spec:
+      containers:
+      - name: auth-microservice
+        image: raniamidaoui/goMart-authentication-service:latest
+        ports:
+        - containerPort: 50051
+        env:
+          - name: DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: auth-config
+                key: DB_HOST
+
+          - name: DB_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: auth-config
+                key: DB_PORT
+
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: auth-secret
+                key: POSTGRES_USER
+
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: auth-secret
+                key: POSTGRES_PASSWORD
+
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                name: auth-config
+                key: POSTGRES_DB
+
+          - name: JWT_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: auth-secret
+                key: JWT_SECRET_KEY
+
+          - name: DB_URL
+            valueFrom:
+              secretKeyRef:
+                name: auth-secret
+                key: DB_URL
