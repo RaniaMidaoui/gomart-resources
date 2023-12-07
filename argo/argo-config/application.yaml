@@ -1,10 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: goMart
+  name: gomart
   namespace: myargo
   annotations:
-    argocd-image-updater.argoproj.io/image-list: "auth=raniamidaoui/goMart-authentication-service:latest, order=raniamidaoui/goMart-order-service:latest, product=raniamidaoui/goMart-product-service:latest, gateway=raniamidaoui/goMart-gateway:latest"
+    argocd-image-updater.argoproj.io/image-list: "auth=raniamidaoui/gomart-authentication-service:latest, order=raniamidaoui/gomart-order-service:latest, product=raniamidaoui/gomart-product-service:latest, gateway=raniamidaoui/gomart-gateway:latest"
     argocd-image-updater.argoproj.io/write-back-method: git
     argocd-image-updater.argoproj.io/git-branch: main
 
@@ -27,8 +27,8 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/RaniaMidaoui/goMart-resources'
-    path: app-helmcharts/goMart-helmcharts/e-commerce-app
+    repoURL: 'https://github.com/RaniaMidaoui/gomart-resources'
+    path: app-helmcharts/gomart-helmcharts/e-commerce-app
     targetRevision: main
     helm:
       valueFiles:

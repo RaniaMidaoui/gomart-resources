@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: auth-microservice
-        image: raniamidaoui/goMart-authentication-service:latest
+        image: raniamidaoui/gomart-authentication-service:latest
         ports:
         - containerPort: 50051
         env:

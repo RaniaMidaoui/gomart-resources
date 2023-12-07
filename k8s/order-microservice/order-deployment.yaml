@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: order-microservice
-        image: raniamidaoui/goMart-order-service:latest
+        image: raniamidaoui/gomart-order-service:latest
         ports:
         - containerPort: 50053
         env:

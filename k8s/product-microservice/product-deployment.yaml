@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: product-microservice
-        image: raniamidaoui/goMart-product-service:latest
+        image: raniamidaoui/gomart-product-service:latest
         ports:
         - containerPort: 50052
         env:

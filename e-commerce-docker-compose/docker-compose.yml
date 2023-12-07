@@ -45,16 +45,16 @@ services:
     restart: always
 
 
-  goMart-gateway:
-    image: goMart-gateway
+  gomart-gateway:
+    image: gomart-gateway
     build:
-      context: ../../goMart-gateway
+      context: ../../gomart-gateway
       dockerfile: Dockerfile
     environment:
       PORT: ":3000"
-      AUTH_SERVICE_URL: goMart-authentication-service:50051
-      PRODUCT_SERVICE_URL: goMart-product-service:50052
-      ORDER_SERVICE_URL: goMart-order-service:50053
+      AUTH_SERVICE_URL: gomart-authentication-service:50051
+      PRODUCT_SERVICE_URL: gomart-product-service:50052
+      ORDER_SERVICE_URL: gomart-order-service:50053
     ports:
       - 3000:3000
     networks:
@@ -62,10 +62,10 @@ services:
     restart: always
 
 
-  goMart-authentication-service:
-    image: goMart-authentication-service
+  gomart-authentication-service:
+    image: gomart-authentication-service
     build:
-      context: ../../goMart-authentication-service
+      context: ../../gomart-authentication-service
       dockerfile: Dockerfile
     ports:
       - "50051:50051"
@@ -84,13 +84,13 @@ services:
     restart: always
 
 
-  goMart-order-service:
-    image: goMart-order-service
+  gomart-order-service:
+    image: gomart-order-service
     build:
-      context: ../../goMart-order-service
+      context: ../../gomart-order-service
       dockerfile: Dockerfile
     environment:
-      PRODUCT_SERVICE_URL: goMart-product-service:50052
+      PRODUCT_SERVICE_URL: gomart-product-service:50052
       DB_HOST: db_order
       DB_PORT: ${DB_PORT}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -106,10 +106,10 @@ services:
     restart: always
 
 
-  goMart-product-service:
-    image: goMart-product-service
+  gomart-product-service:
+    image: gomart-product-service
     build:
-      context: ../../goMart-product-service
+      context: ../../gomart-product-service
       dockerfile: Dockerfile
     ports:
       - "50052:50052"

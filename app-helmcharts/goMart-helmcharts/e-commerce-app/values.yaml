@@ -1,6 +1,6 @@
 apiGateway:
   apiGateway:
-    image: raniamidaoui/goMart-gateway:latest
+    image: raniamidaoui/gomart-gateway:latest
     imagePullPolicy: Always
   ports:
   - port: 3001
@@ -12,7 +12,7 @@ authMicroservice:
   authMicroservice:
     env:
       dbHost: db-auth-postgresql
-    image: raniamidaoui/goMart-authentication-service:latest
+    image: raniamidaoui/gomart-authentication-service:latest
     imagePullPolicy: Always
   ports:
   - port: 50051
@@ -80,7 +80,7 @@ orderMicroservice:
     env:
       dbHost: db-order-postgresql
       productServiceUrl: product-microservice:50052
-    image: raniamidaoui/goMart-order-service:latest
+    image: raniamidaoui/gomart-order-service:latest
     imagePullPolicy: Always
   ports:
   - port: 50053
@@ -103,7 +103,7 @@ productMicroservice:
     env:
       dbHost: db-product-postgresql
       productServiceUrl: product-microservice
-    image: raniamidaoui/goMart-product-service:latest
+    image: raniamidaoui/gomart-product-service:latest
     imagePullPolicy: Always
   replicas: 1
   type: ClusterIP
