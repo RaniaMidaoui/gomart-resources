@@ -6,10 +6,6 @@ pipeline {
       CHART_PATH="./app-helmcharts/gomart-helmcharts"
     }
 
-    tools {
-      go 'go_120'
-    }
-
     agent any
 
     stages{
