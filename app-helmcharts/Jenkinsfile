@@ -3,7 +3,7 @@ pipeline {
     environment{
       DEPLOY_NAME="e-commerce"
       K8S_CONFIG_NAME='kubeconfig'
-      CHART_PATH="./app-helmcharts/gomart-helmcharts"
+      CHART_PATH="./app-helmcharts/goMart-helmcharts"
     }
 
     agent any
