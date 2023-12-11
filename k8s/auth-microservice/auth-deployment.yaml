@@ -13,10 +13,29 @@ spec:
     metadata:
       labels:
         app: auth-microservice
+      annotations:
+          vault.hashicorp.com/agent-inject: 'true'
+          vault.hashicorp.com/role: 'auth'
+          vault.hashicorp.com/agent-inject-secret-config: 'secret/data/auth-microservice'
+          # Environment variable export template
+          vault.hashicorp.com/agent-inject-template-config: |
+            {{- with secret "secret/data/auth-microservice" -}}
+              POSTGRES_PASSWORD="{{ .Data.data.POSTGRES_PASSWORD }}"
+              POSTGRES_USER="{{ .Data.data.POSTGRES_USER }}"
+              JWT_SECRET_KEY="{{ .Data.data.JWT_SECRET_KEY }}"
+              DB_URL="{{ .Data.data.DB_URL }}"
+            {{- end }}
     spec:
+      serviceAccountName: vault
       containers:
       - name: auth-microservice
         image: raniamidaoui/gomart-authentication-service:latest
+        imagePullPolicy: "IfNotPresent"
+        command:
+        - sh
+        - "-c"
+        - |
+          export $(cat /vault/secrets/config | xargs)
         ports:
         - containerPort: 50051
         env:
@@ -32,32 +51,8 @@ spec:
                 name: auth-config
                 key: DB_PORT
 
-          - name: POSTGRES_USER
-            valueFrom:
-              secretKeyRef:
-                name: auth-secret
-                key: POSTGRES_USER
-
-          - name: POSTGRES_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: auth-secret
-                key: POSTGRES_PASSWORD
-
           - name: POSTGRES_DB
             valueFrom:
               configMapKeyRef:
                 name: auth-config
                 key: POSTGRES_DB
-
-          - name: JWT_SECRET_KEY
-            valueFrom:
-              secretKeyRef:
-                name: auth-secret
-                key: JWT_SECRET_KEY
-
-          - name: DB_URL
-            valueFrom:
-              secretKeyRef:
-                name: auth-secret
-                key: DB_URL

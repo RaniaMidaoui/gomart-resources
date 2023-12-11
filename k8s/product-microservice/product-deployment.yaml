@@ -5,7 +5,7 @@ metadata:
   labels:
     app: product-microservice
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: product-microservice
@@ -14,6 +14,7 @@ spec:
       labels:
         app: product-microservice
     spec:
+      serviceAccountName: product
       containers:
       - name: product-microservice
         image: raniamidaoui/gomart-product-service:latest

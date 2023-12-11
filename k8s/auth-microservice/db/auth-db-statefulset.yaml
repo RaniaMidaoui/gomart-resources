@@ -14,6 +14,16 @@ spec:
     metadata:
       labels:
         app: postgres
+      annotations:
+          vault.hashicorp.com/agent-inject: 'true'
+          vault.hashicorp.com/role: 'auth'
+          vault.hashicorp.com/agent-inject-secret-config: 'secret/data/auth-microservice'
+          # Environment variable export template
+          vault.hashicorp.com/agent-inject-template-config: |
+            {{- with secret "secret/data/auth-microservice" -}}
+              POSTGRES_PASSWORD="{{ .Data.data.POSTGRES_PASSWORD }}"
+              POSTGRES_USER="{{ .Data.data.POSTGRES_USER }}"
+            {{- end }}
     spec:
       initContainers:
         - name: postgres-init
@@ -30,10 +40,16 @@ spec:
             else
               printf "I am a read-only replica"
             fi
+      serviceAccountName: vault
       containers:
         - name: db-auth
           image: postgres:13
           imagePullPolicy: "IfNotPresent"
+          command:
+          - sh
+          - "-c"
+          - |
+            export $(cat /vault/secrets/config | xargs)
           ports:
             - containerPort: 5432
           volumeMounts:
@@ -41,16 +57,6 @@ spec:
               mountPath: /var/lib/postgresql/data
               subPath: postgres
           env:  
-            - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: auth-secret
-                  key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: auth-secret
-                  key: POSTGRES_PASSWORD
             - name: POSTGRES_DB
               valueFrom:
                 configMapKeyRef:
