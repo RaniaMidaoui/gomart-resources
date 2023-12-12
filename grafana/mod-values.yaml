@@ -1,0 +1,19 @@
+grafana.ini:
+  paths:
+    data: /var/lib/grafana/
+    logs: /var/log/grafana
+    plugins: /var/lib/grafana/plugins
+    provisioning: /etc/grafana/provisioning
+  analytics:
+    check_for_updates: true
+  log:
+    mode: console
+
+#### New addition for the SMTP part enablement
+  smtp:
+    enabled: true
+    host: smtp.gmail.com:465
+    user: youremail@gmail.com
+    pass: password123
+  grafana_net:
+    url: https://grafana.net
