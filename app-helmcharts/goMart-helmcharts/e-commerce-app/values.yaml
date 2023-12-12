@@ -5,7 +5,7 @@ apiGateway:
   ports:
   - port: 3001
     targetPort: 3001
-  replicas: 1
+  replicas: 3
   type: ClusterIP
 
 authMicroservice:
