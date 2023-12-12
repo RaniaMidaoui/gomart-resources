@@ -28,7 +28,7 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/RaniaMidaoui/gomart-resources'
-    path: app-helmcharts/gomart-helmcharts/e-commerce-app
+    path: app-helmcharts/goMart-helmcharts/e-commerce-app
     targetRevision: main
     helm:
       valueFiles:
